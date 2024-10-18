@@ -31,20 +31,18 @@ class UserController extends Controller
     {
         // Validasi input dari form
         $request->validate([
-            'nama' => 'required|string|max:255',
-            'nip' => 'required|numeric|unique:users,nip',
-            'jabatan' => 'required|string|max:255',
+            'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:6',
+            'role' => 'required|in:admin,pegawai',
         ]);
     
         // Buat instansi baru dari model User dan simpan data
         User::create([
-            'nama' => $request->input('nama'),
-            'nip' => $request->input('nip'),
-            'jabatan' => $request->input('jabatan'),
+            'name' => $request->input('name'),
             'email' => $request->input('email'),
             'password' => bcrypt($request->input('password')), // Enkripsi password
+            'role' => $request->input('role'),
         ]);
     
         // Redirect atau kembalikan respons
@@ -67,31 +65,42 @@ class UserController extends Controller
     {
         // Mencari data pengguna berdasarkan ID
         $user = User::findOrFail($id);
-        return view('user.edit_akun', compact('user')); // Tampilkan view edit
+        return view('kelola.edit_akun', compact('user')); // Tampilkan view edit
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
-    {
-        // Validasi data yang diinput
-        $request->validate([
-            'nama' => 'required|string|max:255',
-            'nip' => 'required|numeric|unique:users,nip,' . $id,
-            'jabatan' => 'required|string|max:255',
-        ]);
-
-        // Update data pengguna
-        $user = User::findOrFail($id);
-        $user->nama = $request->input('nama');
-        $user->nip = $request->input('nip');
-        $user->jabatan = $request->input('jabatan');
-        $user->save();
-
-        // Redirect kembali ke daftar pengguna dengan pesan sukses
-        return redirect()->route('users.index')->with('success', 'Data pengguna berhasil diupdate.');
-    }
+     public function update(Request $request, string $id)
+     {
+         $request->validate([
+             'name' => 'required|max:100',
+             'email' => 'required|email|unique:users,email,' . $id,
+             'role' => 'required',
+             'password' => 'nullable', // Password bersifat opsional karna nullable
+ 
+         ]);
+ 
+         // Mencari user berdasarkan ID jika tidak di temukan berarti fail atau 404
+         $users = User::findOrFail($id);
+ 
+         // Update data user berdasarkan inputan form
+         // name, email dan role di update berdasarkan inputan form
+         $users->name = $request->name;
+         $users->email = $request->email;
+         $users->role = $request->role;
+ 
+         // Jika password diisi, maka lakukan enkripsi dan update bersifat opsional
+         if ($request->filled('password')) {
+             $users->password = bcrypt($request->password);
+         }
+ 
+         // function untuk Simpan perubahan ke databasenya
+         $users->save();
+ 
+         // akan mengarahkan ke halaman data user bersama session succes dengan pesan berhasil jika update succes
+         return redirect()->route('users.index')->with('success', 'Berhasil mengupdate akun!');
+     }
 
     /**
      * Remove the specified resource from storage.

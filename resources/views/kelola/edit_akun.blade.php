@@ -17,34 +17,42 @@
             </div>
         @endif
 
-        <form action="{{ route('users.update', $users->id) }}" method="POST">
+        <form action="{{ route('users.update', $user->id) }}" method="POST">
             @csrf
             @method('PATCH')
             <!-- Input Nama -->
             <div class="form-group">
-                <label for="nama">Nama</label>
-                <input type="text" class="form-control" id="nama" name="nama" value="{{ $users->nama }}" placeholder="Masukkan nama users" required>
+                <label for="name">Nama</label>
+                <input type="text" class="form-control" id="name" name="name" value="{{ $user->name }}" placeholder="Masukkan nama pegawai" required>
             </div>
 
-            <!-- Input NIP -->
+            <!-- Input Email -->
             <div class="form-group">
-                <label for="nip">NIP</label>
-                <input type="number" class="form-control" id="nip" name="nip" value="{{ $users->nip }}" placeholder="Masukkan NIP users" required>
+                <label for="email">Email</label>
+                <input type="email" class="form-control" id="email" name="email" value="{{ $user->email }}" placeholder="Masukkan email pegawai" required>
             </div>
 
-
-            <!-- Input NIP -->
+            <!-- Input Password -->
             <div class="form-group">
-                <label for="jabatan">jabatan</label>
-                <input type="text" class="form-control" id="jabatan" name="jabatan" value="{{ $users->jabatan }}" placeholder="Masukkan NIP users" required>
+                <label for="password">Password</label>
+                <input type="password" class="form-control" id="password" name="password" value="" placeholder="Masukkan password pegawai">
             </div>
 
-           
+            <!-- Input Role -->
+            <div class="form-group">
+                <label for="role">Role</label>
+                <select class="form-control" id="role" name="role" required>
+                    <option value="">-- Pilih Role --</option>
+                    <option value="admin" {{ $user->role == 'admin' ? 'selected' : '' }}>Admin</option>
+                    <option value="pegawai" {{ $user->role == 'pegawai' ? 'selected' : '' }}>Pegawai</option>
+                </select>
+            </div>
 
-              <!-- Tombol Submit -->
-              <button type="submit" class="btn btn-primary">Simpan</button>
-              <!-- Tombol Back -->
-              <a href="{{ route('users.index') }}" class="btn btn-secondary">Kembali</a>
+            <!-- Tombol Submit -->
+            <button type="submit" class="btn btn-primary">Simpan</button>
+            <!-- Tombol Back -->
+            <a href="{{ route('users.index') }}" class="btn btn-secondary">Kembali</a>
         </form>
     </div>
 @endsection
+
